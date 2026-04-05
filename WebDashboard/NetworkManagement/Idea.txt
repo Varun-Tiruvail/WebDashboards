@@ -1,0 +1,106 @@
+Wholesale Network Dashboard Proposal: Intelligent Purchase Optimization & Demand-Supply Balance
+Executive Summary
+This dashboard transforms your wholesale network from reactive stocking to data-driven procurement. It identifies exactly which product categories to reduce (loss-making, slow-moving, congestion-creating) and which to amplify (profit-drivers, high-turnover, popularity-builders). Each objective ties to specific chart types and analytical models.
+
+Core Dashboard Architecture (4 Interlocking Panels)
+Panel 1: Expense Minimization & Loss Prevention
+Objective: Identify categories to minimize purchase to avoid losses, holding costs, and dead stock.
+
+Metric / Analysis	Chart Type	Why This Works	Action Trigger
+Inventory Turnover Ratio by Category	Horizontal Bar Chart (sorted low→high)	Quickly spot categories with <2 turns/year—capital stuck in slow movers	Minimize purchase for bottom 20% categories
+Days Inventory Outstanding (DIO)	Heatmap (categories vs. months)	Reveals seasonal stagnation; red zones = cash traps	Flag categories consistently >90 DIO
+Gross Margin Return on Inventory Investment (GMROII)	Scatter Plot (GMROII vs. Turnover)	Bottom-left quadrant = low profit + slow sales → prime reduction candidates	Set automated "reduce purchase" alert
+Shrinkage & Obsolescence %	Bullet Graph (actual vs. benchmark)	Identifies categories with expiry, damage, or theft above 3%	Immediate purchase freeze if >5%
+Carrying Cost % of Revenue by Category	Stacked Column Chart (storage + finance + risk)	Reveals hidden costs—high storage density ≠ high profit	Renegotiate supplier terms or delist
+Analysis Model Used: ABC-XYZ Matrix
+
+Classify A (high revenue), B (medium), C (low) combined with X (stable demand), Y (seasonal/trendy), Z (erratic)
+
+C-Z items = immediate minimization candidates
+
+Panel 2: Profit & Popularity Maximization
+Objective: Identify categories to increase purchase—high profit, fast turnover, customer magnets.
+
+Metric / Analysis	Chart Type	Why This Works	Action Trigger
+Category Contribution Margin	Waterfall Chart (category by category)	Visually shows which categories truly fund your business after variable costs	Increase purchase for top 5 contributors
+Sales Velocity (units/day)	Funnel Chart (broad category → subcategory → SKU)	Drills down to fastest-selling items; popularity proxy	Reorder trigger when velocity exceeds 80% of safety stock
+Customer Walk-in Driver (what brings people)	Word Cloud / Bar Chart (from POS + survey data)	Bestsellers ≠ profit drivers; this shows loss leaders that attract crowds	Keep these in stock even if thin margin
+Cross-Selling Index by Category	Network Graph (nodes = categories, edges = co-purchase frequency)	Identifies which categories, when bought together, boost basket size	Increase purchase of companion categories
+New Customer Acquisition by Category	Stacked Area Chart (time series)	Categories that consistently bring new buyers → long-term growth	Promote + increase stock depth
+Analysis Model Used: RFM (Recency, Frequency, Monetary) + Market Basket Analysis
+
+Find categories purchased by high-RFM customers
+
+Apriori algorithm identifies product associations (e.g., buying cement → likely buy sand)
+
+Panel 3: Congestion Management & Supply-Demand Balance
+Objective: Avoid warehouse congestion, stockouts, and bullwhip effect across your wholesale network.
+
+Metric / Analysis	Chart Type	Why This Works	Action Trigger
+Storage Utilization by Category	Treemap (area = cubic storage occupied, color = turnover rate)	Instantly spot "space hogs" that sell slowly → congestion culprits	Reduce purchase or renegotiate storage allocation
+Order Fulfillment Lead Time Variability	Control Chart (X-bar R chart)	Suppliers with high lead time variance force you to overstock → congestion	Shift purchase to reliable suppliers even at higher unit cost
+Days of Supply (DOS) Distribution	Histogram with overlaid normal curve	Shows if 80% of categories have DOS > ideal range (e.g., >60 days) → systemic overbuying	Set DOS target band (14–45 days for wholesale)
+Stockout Rate vs. Overstock Rate	Quadrant Chart (4 boxes)	Top-left quadrant (high stockout + high overstock) = forecasting failure → chaos	Implement demand-smoothing for those categories
+Supplier Reliability Score by Category	Gauge Chart + Trend Line	Tracks on-time delivery % + quality rejection %	Shift purchase from unreliable to reliable sources
+Network-Wide Inventory Days	Sankey Diagram (inflow → storage → outflow)	Visualizes where inventory gets stuck between shops in your network	Redistribute from congested shops to fast-moving ones
+Analysis Model Used: Seasonal Decomposition (STL) + Safety Stock Optimization
+
+Separate trend, seasonal, residual components
+
+Set dynamic safety stock = Z-score × MAD of forecast error × lead time
+
+Reduces congestion by eliminating blanket overstocking
+
+Panel 4: Demand Forecasting & Automated Rebalancing
+Objective: Proactive, not reactive—predict demand and reallocate inventory across your shop network.
+
+Metric / Analysis	Chart Type	Why This Works	Action Trigger
+Forecast vs. Actual Demand (MAPE) by Category	Fan Chart (prediction intervals)	Shows which categories have widening error bands → need human review	Automated PO reduction for categories with MAPE >30%
+Lead Time Demand Distribution	Probability Density Curve	If 95th percentile lead time demand > current stock → risk of stockout AND congestion from overprotection	Calculate optimal reorder point = μ(LTD) + SS
+Inter-Shop Transfer Opportunity	Chord Diagram (shops as nodes, transfer volume as arcs)	Identifies surplus in Shop A, deficit in Shop B → buy less overall	Internal transfer before external purchase
+Promotional Lift Decay Curve	Exponential decay line chart	Shows how long a promotion's effect lasts before demand returns to baseline	Time purchases to coincide with lift period, not after
+What-If Scenario Sliders	Interactive controls (price, lead time, demand shock)	Simulate: "If I reduce Category X by 30%, how does congestion change?"	Test decisions before committing capital
+Analysis Model Used: Croston’s Method (for intermittent demand) + Dynamic Programming for Multi-Echelon Inventory
+
+For wholesale, demand is often lumpy—Croston outperforms simple exponential smoothing
+
+Multi-echelon optimization reduces total network inventory by 15–25%
+
+Dashboard Layout & User Workflow
+text
++----------------------------------------------------------------------------------------+
+|  HEADER: Last 90 Days | Compare: This Year vs Last Year | Alert Summary (3 critical)  |
++----------------------------+-------------------------------+-------------------------------+
+|                            |                               |                               |
+|  Panel 1: LOSS PREVENTION  |   Panel 2: PROFIT & POPULARITY |  Panel 3: CONGESTION MAP     |
+|  - ABC-XYZ Matrix (table)  |   - Contribution Waterfall    |  - Treemap (storage hog)      |
+|  - GMROII Scatter          |   - Sales Velocity Funnel     |  - Quadrant (stockout/over)   |
+|  - Carrying Cost Stack     |   - Cross-Selling Network     |  - Supplier Control Chart     |
+|                            |                               |                               |
++----------------------------+-------------------------------+-------------------------------+
+|                                                                                        |
+|  Panel 4: FORECAST & REBALANCE (Full Width)                                            |
+|  - Fan Chart (top 10 volatile categories)  |  - Inter-Shop Chord Diagram      |
+|  - "Action List" generated by AI:                                                      |
+|    → REDUCE purchase: [Category C, E, G] (expected savings: ₹X + Y% space freed)      |
+|    → INCREASE purchase: [Category A, B, D] (expected profit lift: ₹Z)                 |
+|    → TRANSFER between shops: 500 units of Cat F from Shop 2 → Shop 5                   |
+|                                                                                        |
++----------------------------------------------------------------------------------------+
+|  ALERTS & RECOMMENDATIONS (Bottom Bar)                                                 |
+|  🔴 Congestion alert: Cat X >120 DOS, storage cost spike | 🟡 Supplier Y late 3x in row |
++----------------------------------------------------------------------------------------+
+Data Sources Required
+Data Source	Fields Needed	Update Frequency
+POS System	Category, SKU, qty sold, price, discount, shop ID, date	Daily
+Purchase Orders	Supplier, lead time, unit cost, qty ordered, delivery date	Daily
+Inventory System	On-hand qty, storage location, holding cost per cubic meter, expiry date	Real-time
+Warehouse Mgmt	Bin utilization, putaway/picking time per category	Daily
+Customer Data (if any)	Repeat customer flag, first purchase date, basket contents	Weekly
+Key Performance Indicators (KPIs) to Track Dashboard Success
+Metric	Formula	Target
+Cash-to-Cash Cycle	DIO + DSO - DPO	<45 days
+Inventory Turnover	COGS / Avg Inventory	>6x/year for wholesale
+Perfect Order Rate	% orders on time, complete, damage-free	>95%
+Gross Margin ROI	Gross Profit / Average Inventory Cost	>3.0
+Storage Cost per Revenue	Total storage cost / Category revenue	<8%

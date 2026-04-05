@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesale Network Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i data-feather="box" style="color: var(--accent-primary); width: 2rem; height: 2rem;"></i>
+            <div class="sidebar-title">Nexus<br>Wholesale</div>
+        </div>
+        <nav class="nav-links">
+            <a class="nav-item active" data-target="view-dashboard"><i data-feather="layout"></i> Network Overview</a>
+            <a class="nav-item" data-target="view-store"><i data-feather="shopping-bag"></i> Store-Level</a>
+            <a class="nav-item" data-target="view-redistribution"><i data-feather="refresh-cw"></i> Redistribution</a>
+            <a class="nav-item" data-target="view-regional"><i data-feather="map"></i> Regional Sales</a>
+            <a class="nav-item" data-target="view-supplier"><i data-feather="truck"></i> Suppliers</a>
+            <a class="nav-item" data-target="view-predictive"><i data-feather="trending-up"></i> Predictive AI</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <div class="app-container">
+            
+            <!-- Header -->
+            <header class="app-header">
+                <div>
+                    <h2 style="margin:0; font-size: 1.25rem; font-weight: 700; color: var(--text-main);" id="topbar-title">Network Overview</h2>
+                    <div class="timestamp" style="margin-top: 0.25rem;">
+                        <i data-feather="clock" style="width: 1rem; height: 1rem;"></i> Last 90 Days 
+                        <span style="color: var(--text-muted); margin: 0 0.5rem;">|</span> 
+                        vs Last Year
+                    </div>
+                </div>
+            <div class="header-controls">
+                <div class="stat-box-container" style="margin-bottom:0; gap:1rem;">
+                    <div style="text-align: right;">
+                        <span class="stat-label">Network Cash Cycle</span>
+                        <div class="stat-value" style="color: var(--accent-success);">32 Days</div>
+                    </div>
+                </div>
+                <button id="theme-toggle-btn" class="theme-toggle" title="Toggle Theme">
+                    <i data-feather="sun"></i>
+                </button>
+            </div>
+        </header>
+
+            <!-- View 1: Main Dashboard -->
+            <main class="view active" id="view-dashboard">
+                <div class="dashboard-grid">
+                    
+                    <!-- Panel 1: Loss Prevention -->
+            <section class="panel panel-loss">
+                <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="shield-off"></i> Loss Prevention</h2>
+                        <div class="subtitle">Identify slow-moving cash traps</div>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Plots products by inventory turnover and Gross Margin Return on Investment (GMROII).
+                            <strong>Why it's useful:</strong> Identifies capital trapped in slow-moving or low-profit inventory.
+                            <strong>How to read:</strong> Avoid the bottom-left red zone (low turn, low profit). Blue is average, Green is optimal.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-content-split" style="grid-template-columns: 1fr; margin-top:1rem;">
+                    <div class="panel-section">
+                        <div class="chart-container" style="min-height: 180px;">
+                            <canvas id="scatterChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel-section" style="overflow-y: auto;">
+                        <span class="stat-label">ABC-XYZ Watchlist (Target < 2 Turns)</span>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>Class</th>
+                                    <th>Rev</th>
+                                    <th>Turns</th>
+                                </tr>
+                            </thead>
+                            <tbody id="abc-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel 2: Profit & Popularity -->
+            <section class="panel panel-profit">
+                <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="trending-up"></i> Velocity Leaders</h2>
+                        <div class="subtitle">Fast-moving crowds magnets</div>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Ranks product categories by daily unit sales velocity.
+                            <strong>Why it's useful:</strong> Highlights 'crowd magnet' categories that drive foot traffic.
+                            <strong>How to read:</strong> Longer bars indicate faster-moving inventory that requires deeper safety stock.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section" style="margin-top: 1rem;">
+                    <div class="stat-box-container">
+                        <div class="stat-box">
+                            <div class="stat-label">Top Category</div>
+                            <div class="stat-value">Drinks</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Cross-Sell Idx</div>
+                            <div class="stat-value" style="color: var(--accent-primary);">1.42</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="velocityChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel 3: Congestion Map -->
+            <section class="panel panel-congestion">
+                <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="layers"></i> Storage Bottlenecks</h2>
+                        <div class="subtitle">Space hogs vs. Turnover Rate</div>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Visualizes the percentage of total warehouse volume occupied by category.
+                            <strong>Why it's useful:</strong> Helps identify bulky products ('space hogs') causing warehouse congestion.
+                            <strong>How to read:</strong> Large red segments indicate severe congestion risks requiring clearance.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section" style="margin-top: 1rem;">
+                    <div class="chart-container" style="min-height: 200px;">
+                        <canvas id="congestionChart"></canvas>
+                    </div>
+                    <div style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                        <span style="color:rgba(239, 68, 68, 1);font-weight:600;">Red</span> = Slow Turn,
+                        <span style="color:rgba(16, 185, 129, 1);font-weight:600;">Green</span> = Fast Turn
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel 4: Forecast & Rebalance (Full Width) -->
+            <section class="panel panel-forecast">
+                <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="activity"></i> Supply-Demand Optimization & Forecasting</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Overlays AI-driven seasonal demand adjustments on top of base baseline demand.
+                            <strong>Why it's useful:</strong> Prevents stockouts during seasonal spikes and overstocking during lulls.
+                            <strong>How to read:</strong> The dashed blue line represents the adjusted forecast accounting for seasonal trends.
+                        </div>
+                    </div>
+                </div><div class="panel-content-row" style="margin-top: 1rem;">
+                    <div class="panel-section" style="flex: 2;">
+                        <div class="subtitle" style="margin-bottom:0.5rem">Demand Prediction Intervals (Clothes - Jackets)</div>
+                        <div class="chart-container" style="min-height: 200px;">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-section" style="flex: 1; border-left: 1px solid var(--border-color); padding-left: 1rem;">
+                        <div class="subtitle" style="margin-bottom:0.5rem">AI Re-balancing Actions</div>
+                        <div class="action-list" id="action-list-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </main>
+
+            <!-- View 2: Store Level Analysis -->
+            <main class="view" id="view-store">
+                <div class="grid-2col">
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="bar-chart-2"></i> Store Footfall vs Conversion</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Compares raw footfall traffic against the actual purchase conversion rate.
+                            <strong>Why it's useful:</strong> Reveals stores that attract visitors but fail to close sales.
+                            <strong>How to read:</strong> Look for high blue bars (footfall) decoupled from the green line (conversion).
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="storeFootfallChart"></canvas></div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="alert-octagon"></i> High Risk Localized Stockouts</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Maps the statistical probability of a stockout happening within 7 days.
+                            <strong>Why it's useful:</strong> Enables pre-emptive inventory routing before shelves go empty.
+                            <strong>How to read:</strong> Larger colored wedges indicate critical stockout probabilities.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="storeStockoutChart"></canvas></div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- View 3: Stock Redistribution -->
+            <main class="view" id="view-redistribution">
+                <div class="grid-layout-complex">
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="share-2"></i> Network Transfer Routes</h2>
+                        <div class="subtitle">Optimal inter-shop transfers to clear congestion</div>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Calculates the most efficient routing paths for inter-store stock transfers.
+                            <strong>Why it's useful:</strong> Neutralizes imbalances without ordering new inventory from external suppliers.
+                            <strong>How to read:</strong> Longer directed bars represent a higher volume of units advised for transfer.
+                        </div>
+                    </div>
+                </div>
+                        <div class="chart-container"><canvas id="redistributionNetwork"></canvas></div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="database"></i> Surplus / Deficit Board</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Displays data for this metric.
+                            <strong>Why it's useful:</strong> Provides visibility into network health.
+                            <strong>How to read:</strong> Analyze the chart trends.
+                        </div>
+                    </div>
+                </div><div class="action-list" id="redistribution-actions"></div>
+                    </section>
+                    <section class="panel full-panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="trending-down"></i> Estimated Savings from Transfers</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Projects the capital saved by utilizing internal stock transfers.
+                            <strong>Why it's useful:</strong> Validates the financial impact of the redistribution strategy.
+                            <strong>How to read:</strong> The rising green area shows cumulative savings over a 4-week horizon.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="savingsChart"></canvas></div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- View 4: Regional Sales -->
+            <main class="view" id="view-regional">
+                <div class="grid-3col">
+                    <section class="panel full-panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="map-pin"></i> Region vs Category Dominance</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Breaks down total category sales volumes by geographical region.
+                            <strong>Why it's useful:</strong> Identifies localized product preferences to shape regional procurement.
+                            <strong>How to read:</strong> Color segments show regional dominance; overall height equals total inventory sold.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="regionalBarChart"></canvas></div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="pie-chart"></i> Market Share</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Shows the proportion of total network revenue generated by each region.
+                            <strong>Why it's useful:</strong> Highlights macro-level dependency on specific geographical markets.
+                            <strong>How to read:</strong> Hover over the ring segments to see the exact percentage split.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="regionalPieChart"></canvas></div>
+                    </section>
+                    <section class="panel" style="grid-column: span 2;">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="activity"></i> Regional Growth Trend</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Tracks month-over-month revenue growth trajectories per region.
+                            <strong>Why it's useful:</strong> Identifies stagnating regions early before quarterly losses mount.
+                            <strong>How to read:</strong> Look for intersecting lines which indicate shifts in market share momentum.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="regionalTrendChart"></canvas></div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- View 5: Supplier Performance -->
+            <main class="view" id="view-supplier">
+                <div class="grid-2col">
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="truck"></i> Lead Time Variance</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Measures the variance in delivery days from the promised lead time.
+                            <strong>Why it's useful:</strong> Identifies unreliable suppliers causing bullwhip effects.
+                            <strong>How to read:</strong> Higher bars indicate erratic delivery schedules requiring larger safety stocks.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="supplierLeadTime"></canvas></div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="frown"></i> Defect & Rejection Rate</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Chronicles the percentage of inventory rejected upon warehouse receipt.
+                            <strong>Why it's useful:</strong> Flags quality control degradation at the supplier source.
+                            <strong>How to read:</strong> Spikes above the network average line require immediate supplier audits.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="supplierDefect"></canvas></div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- View 6: Predictive AI -->
+            <main class="view" id="view-predictive">
+                <div class="grid-layout-complex">
+                    <section class="panel full-panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="cpu"></i> Seasonality & Demand Forecast Model</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Maps base historical demand against the AI's seasonal overlay model.
+                            <strong>Why it's useful:</strong> Visualizes exactly how the machine learning model adjusts procurement.
+                            <strong>How to read:</strong> Dashed lines represent the AI's predictions vs historical baselines.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="predictiveModelChart"></canvas></div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="sliders"></i> Confidence Scores</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Scores the reliability of various forecasting models.
+                            <strong>Why it's useful:</strong> Provides transparency into which model the system is prioritizing.
+                            <strong>How to read:</strong> Higher percentage bars indicate a higher confidence weighting in the forecast.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="confidenceChart"></canvas></div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                    <div>
+                        <h2><i data-feather="zap"></i> Fast-Acting Variables</h2>
+                    </div>
+                    <div class="info-icon-wrapper">
+                        <i data-feather="info" style="width: 1rem; height: 1rem;"></i>
+                        <div class="info-tooltip">
+                            <strong>What it does:</strong> Ranks external impacts (weather, promos) on current demand pacing.
+                            <strong>Why it's useful:</strong> Shows why the AI is deviating from historical norms.
+                            <strong>How to read:</strong> The further the point is from the center, the heavily weighted the variable.
+                        </div>
+                    </div>
+                </div><div class="chart-container"><canvas id="variablesChart"></canvas></div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- Bottom Alert Bar (Persistent across views) -->
+        <footer class="alert-bar">
+            <div class="alert-label"><i data-feather="bell"></i> Network Alerts</div>
+            <div class="alert-ticker">
+                <div class="alert-items" id="ticker-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </footer>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script src="js/dummyData.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
