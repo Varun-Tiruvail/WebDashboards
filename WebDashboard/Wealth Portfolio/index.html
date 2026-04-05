@@ -1,828 +1,929 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WealthPortfolio — Financial Advisor Dashboard</title>
-  <meta name="description" content="A comprehensive financial advisor portfolio analytics dashboard with risk models, rebalancing tools, client management, and interactive visualizations." />
+  <meta name="description"
+    content="A comprehensive financial advisor portfolio analytics dashboard with risk models, rebalancing tools, client management, and interactive visualizations." />
   <link rel="stylesheet" href="css/main.css" />
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <!-- Chart.js (local) -->
   <script src="js/chart.min.js"></script>
 </head>
+
 <body>
 
-<!-- ============================================================
+  <!-- ============================================================
+     GLOBAL LOADER
+  ============================================================ -->
+  <div id="app-loader" class="app-loader">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">Loading Workspace...</div>
+    </div>
+  </div>
+
+  <!-- ============================================================
      SIDEBAR
 ============================================================ -->
-<aside id="sidebar">
-  <div class="sidebar-header" id="sidebar-header" style="cursor: pointer;" title="Toggle sidebar">
-    <div class="sidebar-logo"><i class="ph ph-briefcase"></i></div>
-    <div class="sidebar-brand">
-      <span class="name">WealthPortfolio</span>
-      <span class="sub">Advisor Platform</span>
-    </div>
-  </div>
-
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Overview</div>
-    <div class="nav-item active" data-view="dashboard">
-      <span class="nav-icon"><i class="ph ph-chart-bar"></i></span>
-      <span class="nav-label">Dashboard</span>
-    </div>
-
-    <div class="nav-section-label">Portfolio</div>
-    <div class="nav-item" data-view="portfolio">
-      <span class="nav-icon"><i class="ph ph-trend-up"></i></span>
-      <span class="nav-label">Holdings</span>
-    </div>
-    <div class="nav-item" data-view="risk">
-      <span class="nav-icon"><i class="ph ph-warning-circle"></i></span>
-      <span class="nav-label">Risk &amp; Analytics</span>
-    </div>
-    <div class="nav-item" data-view="rebalancing">
-      <span class="nav-icon"><i class="ph ph-scales"></i></span>
-      <span class="nav-label">Rebalancing</span>
-    </div>
-
-    <div class="nav-section-label">Management</div>
-    <div class="nav-item" data-view="clients">
-      <span class="nav-icon"><i class="ph ph-users"></i></span>
-      <span class="nav-label">Clients</span>
-      <span class="nav-badge">6</span>
-    </div>
-    <div class="nav-item" data-view="reports">
-      <span class="nav-icon"><i class="ph ph-file-text"></i></span>
-      <span class="nav-label">Reports</span>
-    </div>
-  </nav>
-
-  <div class="sidebar-footer">
-    <div class="advisor-card">
-      <div class="advisor-avatar">SM</div>
-      <div class="advisor-info">
-        <div class="advisor-name">Sarah Mitchell</div>
-        <div class="advisor-role">Senior Advisor</div>
+  <aside id="sidebar">
+    <div class="sidebar-header" id="sidebar-header" style="cursor: pointer;" title="Toggle sidebar">
+      <div class="sidebar-logo"><i class="ph ph-briefcase"></i></div>
+      <div class="sidebar-brand">
+        <span class="name">WealthPortfolio</span>
+        <span class="sub">Advisor Platform</span>
       </div>
     </div>
-  </div>
-</aside>
 
-<!-- ============================================================
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" data-view="dashboard">
+        <span class="nav-icon"><i class="ph ph-chart-bar"></i></span>
+        <span class="nav-label">Dashboard</span>
+      </div>
+
+      <div class="nav-section-label">Portfolio</div>
+      <div class="nav-item" data-view="portfolio">
+        <span class="nav-icon"><i class="ph ph-trend-up"></i></span>
+        <span class="nav-label">Holdings</span>
+      </div>
+      <div class="nav-item" data-view="risk">
+        <span class="nav-icon"><i class="ph ph-warning-circle"></i></span>
+        <span class="nav-label">Risk &amp; Analytics</span>
+      </div>
+      <div class="nav-item" data-view="rebalancing">
+        <span class="nav-icon"><i class="ph ph-scales"></i></span>
+        <span class="nav-label">Rebalancing</span>
+      </div>
+
+      <div class="nav-section-label">Management</div>
+      <div class="nav-item" data-view="clients">
+        <span class="nav-icon"><i class="ph ph-users"></i></span>
+        <span class="nav-label">Clients</span>
+        <span class="nav-badge">6</span>
+      </div>
+      <div class="nav-item" data-view="reports">
+        <span class="nav-icon"><i class="ph ph-file-text"></i></span>
+        <span class="nav-label">Reports</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="advisor-card">
+        <div class="advisor-avatar">VT</div>
+        <div class="advisor-info">
+          <div class="advisor-name">Varun Tiruvail</div>
+          <div class="advisor-role">Senior Advisor</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
      MAIN CONTENT
 ============================================================ -->
-<div id="main-content">
+  <div id="main-content">
 
-  <!-- Top Bar -->
-  <header id="topbar">
-    <div>
-      <div class="topbar-title" id="topbar-title">Dashboard Overview</div>
-      <div class="topbar-subtitle" id="topbar-subtitle">Portfolio Analytics · Demo Mode</div>
-    </div>
-    <span class="demo-badge">⚠ Demo Data</span>
-    <div class="topbar-actions">
-      <button class="topbar-btn" title="Search" onclick="ExportUtil.showToast('Search coming soon!','')"><i class="ph ph-magnifying-glass"></i></button>
-      <button class="topbar-btn" id="alerts-btn" title="Notifications">
-        <i class="ph ph-bell"></i><span class="badge">3</span>
-      </button>
-      <button class="topbar-btn" title="Settings" onclick="ExportUtil.showToast('Settings panel coming soon!','')"><i class="ph ph-gear"></i></button>
-    </div>
-  </header>
+    <!-- Top Bar -->
+    <header id="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard Overview</div>
+        <div class="topbar-subtitle" id="topbar-subtitle">Portfolio Analytics · Demo Mode</div>
+      </div>
+      <span class="demo-badge">⚠ Demo Data</span>
+      <div class="topbar-actions">
+        <button class="topbar-btn" title="Search" onclick="ExportUtil.showToast('Search coming soon!','')"><i
+            class="ph ph-magnifying-glass"></i></button>
+        <button class="topbar-btn" id="alerts-btn" title="Notifications">
+          <i class="ph ph-bell"></i><span class="badge">3</span>
+        </button>
+        <button class="topbar-btn" title="Settings" onclick="ExportUtil.showToast('Settings panel coming soon!','')"><i
+            class="ph ph-gear"></i></button>
+      </div>
+    </header>
 
-  <!-- Page Content -->
-  <main id="page-content">
+    <!-- Page Content -->
+    <main id="page-content">
 
-    <!-- ======================================================
+      <!-- ======================================================
          PAGE: DASHBOARD
     ====================================================== -->
-    <div class="tabs-container active" id="page-dashboard">
+      <div class="tabs-container active" id="page-dashboard">
 
-      <!-- KPI Grid -->
-      <div id="kpi-grid-container">
-        <!-- KPI Row -->
-        <div class="kpi-grid" style="margin-bottom:20px">
+        <!-- KPI Grid -->
+        <div id="kpi-grid-container">
+          <!-- KPI Row -->
+          <div class="kpi-grid" style="margin-bottom:20px">
 
-          <!-- AUM -->
-          <div class="kpi-tile" style="border-top:2px solid #6366f1">
-            <div class="kpi-label">Total AUM</div>
-            <div class="kpi-value mono" id="kpi-aum">$47,832,640</div>
-            <div class="kpi-sub">
-              <span class="kpi-delta positive" id="kpi-return-ytd">+9.74%</span> YTD
-            </div>
-            <div class="kpi-tile-bg-accent"><i class="ph ph-briefcase"></i></div>
-          </div>
-
-          <!-- Daily P&L -->
-          <div class="kpi-tile" style="border-top:2px solid #10b981">
-            <div class="kpi-label">Daily P&amp;L</div>
-            <div class="kpi-value mono pct-positive" id="kpi-daily-pnl">+$124,530</div>
-            <div class="kpi-sub">
-              <span class="kpi-delta positive" id="kpi-daily-pnl-pct">+0.26%</span> today
-            </div>
-            <div class="kpi-tile-bg-accent"><i class="ph ph-chart-line-up"></i></div>
-          </div>
-
-          <!-- Monthly Return -->
-          <div class="kpi-tile" style="border-top:2px solid #22d3ee">
-            <div class="kpi-label">Monthly Return</div>
-            <div class="kpi-value" id="kpi-return-monthly" style="color:#22d3ee">+3.18%</div>
-            <div class="kpi-sub">
-              <span id="kpi-return-weekly" class="pct-positive">+1.42%</span> this week
-            </div>
-            <div class="kpi-tile-bg-accent"><i class="ph ph-calendar-blank"></i></div>
-          </div>
-
-          <!-- Sharpe Ratio -->
-          <div class="kpi-tile" style="border-top:2px solid #a78bfa">
-            <div class="kpi-label">Sharpe Ratio</div>
-            <div class="kpi-value" id="kpi-sharpe" style="color:#a78bfa">1.84</div>
-            <div class="kpi-sub">
-              Sortino: <span id="kpi-sortino" style="color:#a78bfa;font-weight:600">2.31</span>
-            </div>
-            <div class="kpi-tile-bg-accent"><i class="ph ph-ruler"></i></div>
-          </div>
-
-          <!-- Max Drawdown -->
-          <div class="kpi-tile" style="border-top:2px solid #ef4444">
-            <div class="kpi-label">Max Drawdown</div>
-            <div class="kpi-value pct-negative" id="kpi-drawdown">-8.43%</div>
-            <div class="kpi-sub">Peak-to-trough</div>
-            <div class="kpi-tile-bg-accent"><i class="ph ph-chart-line-down"></i></div>
-          </div>
-
-          <!-- Clients -->
-          <div class="kpi-tile" style="border-top:2px solid #f59e0b">
-            <div class="kpi-label">Total Clients</div>
-            <div class="kpi-value" style="color:#f59e0b" id="kpi-clients">12</div>
-            <div class="kpi-sub">
-              <span id="kpi-accounts">34</span> linked accounts
-            </div>
-            <div class="kpi-tile-bg-accent"><i class="ph ph-users"></i></div>
-          </div>
-        </div>
-
-        <!-- Export KPIs button -->
-        <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
-          <div class="export-dropdown" id="export-kpis">
-            <button class="export-btn">⬇ Export KPIs ▾</button>
-            <div class="export-menu">
-              <div class="export-menu-item" data-export="png">🖼 PNG Screenshot</div>
-              <div class="export-menu-item" data-export="pdf">📄 Export as PDF</div>
-              <div class="export-menu-item" data-export="csv">📁 Download CSV</div>
-              <div class="export-menu-item" data-export="xlsx">📊 Excel (.xlsx)</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Main Dashboard Charts Grid -->
-      <div class="dashboard-grid">
-
-        <!-- Performance Chart (8 cols) -->
-        <div class="grid-tile col-8 row-1 tile" id="tile-performance">
-          <div class="tile-header">
-            <span class="tile-title">Portfolio Performance</span>
-            <div class="tile-actions">
-              <div class="time-range-group">
-                <button class="time-range-btn perf-range-btn" data-days="30">1M</button>
-                <button class="time-range-btn perf-range-btn active" data-days="90">3M</button>
-                <button class="time-range-btn perf-range-btn" data-days="182">6M</button>
-                <button class="time-range-btn perf-range-btn" data-days="252">YTD</button>
-                <button class="time-range-btn perf-range-btn" data-days="365">1Y</button>
+            <!-- AUM -->
+            <div class="kpi-tile" style="border-top:2px solid #6366f1">
+              <div class="kpi-label">Total AUM</div>
+              <div class="kpi-value mono" id="kpi-aum">$47,832,640</div>
+              <div class="kpi-sub">
+                <span class="kpi-delta positive" id="kpi-return-ytd">+9.74%</span> YTD
               </div>
-              <div class="export-dropdown" id="export-performance">
-                <button class="export-btn">⬇ Export ▾</button>
-                <div class="export-menu">
-                  <div class="export-menu-item" data-export="png">🖼 PNG</div>
-                  <div class="export-menu-item" data-export="pdf">📄 PDF</div>
-                  <div class="export-menu-item" data-export="csv">📁 CSV</div>
-                  <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
+              <div class="kpi-tile-bg-accent"><i class="ph ph-briefcase"></i></div>
+            </div>
+
+            <!-- Daily P&L -->
+            <div class="kpi-tile" style="border-top:2px solid #10b981">
+              <div class="kpi-label">Daily P&amp;L</div>
+              <div class="kpi-value mono pct-positive" id="kpi-daily-pnl">+$124,530</div>
+              <div class="kpi-sub">
+                <span class="kpi-delta positive" id="kpi-daily-pnl-pct">+0.26%</span> today
+              </div>
+              <div class="kpi-tile-bg-accent"><i class="ph ph-chart-line-up"></i></div>
+            </div>
+
+            <!-- Monthly Return -->
+            <div class="kpi-tile" style="border-top:2px solid #22d3ee">
+              <div class="kpi-label">Monthly Return</div>
+              <div class="kpi-value" id="kpi-return-monthly" style="color:#22d3ee">+3.18%</div>
+              <div class="kpi-sub">
+                <span id="kpi-return-weekly" class="pct-positive">+1.42%</span> this week
+              </div>
+              <div class="kpi-tile-bg-accent"><i class="ph ph-calendar-blank"></i></div>
+            </div>
+
+            <!-- Sharpe Ratio -->
+            <div class="kpi-tile" style="border-top:2px solid #a78bfa">
+              <div class="kpi-label">Sharpe Ratio</div>
+              <div class="kpi-value" id="kpi-sharpe" style="color:#a78bfa">1.84</div>
+              <div class="kpi-sub">
+                Sortino: <span id="kpi-sortino" style="color:#a78bfa;font-weight:600">2.31</span>
+              </div>
+              <div class="kpi-tile-bg-accent"><i class="ph ph-ruler"></i></div>
+            </div>
+
+            <!-- Max Drawdown -->
+            <div class="kpi-tile" style="border-top:2px solid #ef4444">
+              <div class="kpi-label">Max Drawdown</div>
+              <div class="kpi-value pct-negative" id="kpi-drawdown">-8.43%</div>
+              <div class="kpi-sub">Peak-to-trough</div>
+              <div class="kpi-tile-bg-accent"><i class="ph ph-chart-line-down"></i></div>
+            </div>
+
+            <!-- Clients -->
+            <div class="kpi-tile" style="border-top:2px solid #f59e0b">
+              <div class="kpi-label">Total Clients</div>
+              <div class="kpi-value" style="color:#f59e0b" id="kpi-clients">12</div>
+              <div class="kpi-sub">
+                <span id="kpi-accounts">34</span> linked accounts
+              </div>
+              <div class="kpi-tile-bg-accent"><i class="ph ph-users"></i></div>
+            </div>
+          </div>
+
+          <!-- Export KPIs button -->
+          <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+            <div class="export-dropdown" id="export-kpis">
+              <button class="export-btn">⬇ Export KPIs ▾</button>
+              <div class="export-menu">
+                <div class="export-menu-item" data-export="png">🖼 PNG Screenshot</div>
+                <div class="export-menu-item" data-export="pdf">📄 Export as PDF</div>
+                <div class="export-menu-item" data-export="csv">📁 Download CSV</div>
+                <div class="export-menu-item" data-export="xlsx">📊 Excel (.xlsx)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Charts Grid -->
+        <div class="dashboard-grid">
+
+          <!-- Performance Chart (8 cols) -->
+          <div class="grid-tile col-8 row-1 tile" id="tile-performance">
+            <div class="tile-header">
+              <span class="tile-title">Portfolio Performance</span>
+              <div class="tile-actions">
+                <div class="time-range-group">
+                  <button class="time-range-btn perf-range-btn" data-days="30">1M</button>
+                  <button class="time-range-btn perf-range-btn active" data-days="90">3M</button>
+                  <button class="time-range-btn perf-range-btn" data-days="182">6M</button>
+                  <button class="time-range-btn perf-range-btn" data-days="252">YTD</button>
+                  <button class="time-range-btn perf-range-btn" data-days="365">1Y</button>
+                </div>
+                <div class="export-dropdown" id="export-performance">
+                  <button class="export-btn">⬇ Export ▾</button>
+                  <div class="export-menu">
+                    <div class="export-menu-item" data-export="png">🖼 PNG</div>
+                    <div class="export-menu-item" data-export="pdf">📄 PDF</div>
+                    <div class="export-menu-item" data-export="csv">📁 CSV</div>
+                    <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="performanceChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Risk Score Gauge (4 cols) -->
+          <div class="grid-tile col-4 row-1 tile" style="display:flex;flex-direction:column">
+            <div class="tile-header">
+              <span class="tile-title">Risk Score</span>
+            </div>
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+              <div id="risk-gauge" class="gauge-wrap" style="width:200px;height:160px"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:240px">
+                <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
+                  <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">Beta
+                  </div>
+                  <div class="text-mono" style="font-size:15px;font-weight:700;margin-top:2px">0.91</div>
+                </div>
+                <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
+                  <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">
+                    Alpha</div>
+                  <div class="text-mono pct-positive" style="font-size:15px;font-weight:700;margin-top:2px">+2.14%</div>
+                </div>
+                <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
+                  <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">
+                    Volatility</div>
+                  <div class="text-mono" style="font-size:15px;font-weight:700;margin-top:2px">11.2%</div>
+                </div>
+                <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
+                  <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">
+                    Correl.</div>
+                  <div class="text-mono" style="font-size:15px;font-weight:700;margin-top:2px">0.82</div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="chart-container">
-            <canvas id="performanceChart"></canvas>
-          </div>
-        </div>
 
-        <!-- Risk Score Gauge (4 cols) -->
-        <div class="grid-tile col-4 row-1 tile" style="display:flex;flex-direction:column">
-          <div class="tile-header">
-            <span class="tile-title">Risk Score</span>
-          </div>
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
-            <div id="risk-gauge" class="gauge-wrap" style="width:200px;height:160px"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:240px">
-              <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
-                <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">Beta</div>
-                <div class="text-mono" style="font-size:15px;font-weight:700;margin-top:2px">0.91</div>
-              </div>
-              <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
-                <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">Alpha</div>
-                <div class="text-mono pct-positive" style="font-size:15px;font-weight:700;margin-top:2px">+2.14%</div>
-              </div>
-              <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
-                <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">Volatility</div>
-                <div class="text-mono" style="font-size:15px;font-weight:700;margin-top:2px">11.2%</div>
-              </div>
-              <div style="background:var(--bg-surface);border-radius:8px;padding:8px;text-align:center">
-                <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">Correl.</div>
-                <div class="text-mono" style="font-size:15px;font-weight:700;margin-top:2px">0.82</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Allocation Donut (4 cols) -->
-        <div class="grid-tile col-4 row-1 tile" id="tile-allocation">
-          <div class="tile-header">
-            <span class="tile-title">Asset Allocation</span>
-            <div class="tile-actions">
-              <button id="alloc-back-btn" class="tile-icon-btn hidden" title="Back to overview" style="font-size:11px;padding:0 6px;width:auto">← Back</button>
-              <div class="export-dropdown" id="export-allocation">
-                <button class="export-btn">⬇ ▾</button>
-                <div class="export-menu">
-                  <div class="export-menu-item" data-export="png">🖼 PNG</div>
-                  <div class="export-menu-item" data-export="pdf">📄 PDF</div>
-                  <div class="export-menu-item" data-export="csv">📁 CSV</div>
+          <!-- Allocation Donut (4 cols) -->
+          <div class="grid-tile col-4 row-1 tile" id="tile-allocation">
+            <div class="tile-header">
+              <span class="tile-title">Asset Allocation</span>
+              <div class="tile-actions">
+                <button id="alloc-back-btn" class="tile-icon-btn hidden" title="Back to overview"
+                  style="font-size:11px;padding:0 6px;width:auto">← Back</button>
+                <div class="export-dropdown" id="export-allocation">
+                  <button class="export-btn">⬇ ▾</button>
+                  <div class="export-menu">
+                    <div class="export-menu-item" data-export="png">🖼 PNG</div>
+                    <div class="export-menu-item" data-export="pdf">📄 PDF</div>
+                    <div class="export-menu-item" data-export="csv">📁 CSV</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="chart-container">
-            <canvas id="allocationChart"></canvas>
-          </div>
-          <div style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:6px">Click a segment to drill down</div>
-        </div>
-
-        <!-- Top Holdings (8 cols) -->
-        <div class="grid-tile col-8 row-1 tile">
-          <div class="tile-header">
-            <span class="tile-title">Top Holdings</span>
-            <div class="tile-actions">
-              <span style="font-size:10px;color:var(--text-muted)">Sorted by value</span>
+            <div class="chart-container">
+              <canvas id="allocationChart"></canvas>
             </div>
+            <div style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:6px">Click a segment to
+              drill down</div>
           </div>
-          <div style="overflow-x:auto;flex:1">
-            <table class="data-table" style="font-size:12px">
-              <thead>
-                <tr>
-                  <th>Ticker</th><th>Name</th><th>Value</th><th>Weight</th><th>Day Chg</th><th>1Y Return</th>
-                </tr>
-              </thead>
-              <tbody id="top-holdings-tbody"></tbody>
-            </table>
-          </div>
-          <button class="btn btn-secondary btn-sm" style="margin-top:10px;width:100%" onclick="App.navigateTo('portfolio')">View All Holdings →</button>
-        </div>
 
-        <!-- Transaction Feed (4 cols) -->
-        <div class="grid-tile col-4 row-1 tile">
-          <div class="tile-header">
-            <span class="tile-title">Recent Activity</span>
+          <!-- Top Holdings (8 cols) -->
+          <div class="grid-tile col-8 row-1 tile">
+            <div class="tile-header">
+              <span class="tile-title">Top Holdings</span>
+              <div class="tile-actions">
+                <span style="font-size:10px;color:var(--text-muted)">Sorted by value</span>
+              </div>
+            </div>
+            <div style="overflow-x:auto;flex:1">
+              <table class="data-table" style="font-size:12px">
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Weight</th>
+                    <th>Day Chg</th>
+                    <th>1Y Return</th>
+                  </tr>
+                </thead>
+                <tbody id="top-holdings-tbody"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px;width:100%"
+              onclick="App.navigateTo('portfolio')">View All Holdings →</button>
           </div>
-          <div id="transactions-feed" style="overflow-y:auto;flex:1"></div>
+
+          <!-- Transaction Feed (4 cols) -->
+          <div class="grid-tile col-4 row-1 tile">
+            <div class="tile-header">
+              <span class="tile-title">Recent Activity</span>
+            </div>
+            <div id="transactions-feed" style="overflow-y:auto;flex:1"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ======================================================
+      <!-- ======================================================
          PAGE: PORTFOLIO HOLDINGS
     ====================================================== -->
-    <div class="tabs-container" id="page-portfolio">
-      <!-- Sub-tabs -->
-      <div class="page-tabs">
-        <div class="page-tab active" data-tab="holdings">Holdings</div>
-        <div class="page-tab" data-tab="allocation">Allocation</div>
-        <div class="page-tab" data-tab="sectors">Sector/Region</div>
+      <div class="tabs-container" id="page-portfolio">
+        <!-- Sub-tabs -->
+        <div class="page-tabs">
+          <div class="page-tab active" data-tab="holdings">Holdings</div>
+          <div class="page-tab" data-tab="allocation">Allocation</div>
+          <div class="page-tab" data-tab="sectors">Sector/Region</div>
+        </div>
+
+        <!-- Holdings Tab -->
+        <div class="tab-panel active" data-tab="holdings">
+          <div class="tile" id="tile-holdings">
+            <div class="tile-header">
+              <span class="tile-title">All Holdings</span>
+              <div class="tile-actions" style="flex-wrap:wrap;gap:8px">
+                <input type="text" id="holdings-search" placeholder="Search ticker or name..."
+                  style="background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:5px 10px;border-radius:var(--radius-md);font-size:12px;outline:none;width:180px">
+                <select id="class-filter" class="styled-select">
+                  <option value="">All Classes</option>
+                  <option value="US Equity">US Equity</option>
+                  <option value="International">International</option>
+                  <option value="Fixed Income">Fixed Income</option>
+                  <option value="Alternatives">Alternatives</option>
+                </select>
+                <div class="export-dropdown" id="export-holdings">
+                  <button class="export-btn">⬇ Export ▾</button>
+                  <div class="export-menu">
+                    <div class="export-menu-item" data-export="png">🖼 PNG</div>
+                    <div class="export-menu-item" data-export="pdf">📄 PDF</div>
+                    <div class="export-menu-item" data-export="csv">📁 CSV</div>
+                    <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="data-table-wrapper">
+              <table class="data-table" id="holdings-table">
+                <thead>
+                  <tr>
+                    <th data-col="ticker">Ticker <span class="sort-icon">⇅</span></th>
+                    <th data-col="name">Security Name <span class="sort-icon">⇅</span></th>
+                    <th data-col="class">Class <span class="sort-icon">⇅</span></th>
+                    <th data-col="qty">Qty <span class="sort-icon">⇅</span></th>
+                    <th data-col="price">Price <span class="sort-icon">⇅</span></th>
+                    <th data-col="value">Market Value <span class="sort-icon">⇅</span></th>
+                    <th data-col="weight">Weight % <span class="sort-icon">⇅</span></th>
+                    <th data-col="dayChg">Day Chg% <span class="sort-icon">⇅</span></th>
+                    <th data-col="return1y">1Y Return% <span class="sort-icon">⇅</span></th>
+                  </tr>
+                </thead>
+                <tbody id="holdings-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Allocation Tab -->
+        <div class="tab-panel" data-tab="allocation">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="tile" style="height:380px">
+              <div class="tile-header"><span class="tile-title">By Asset Class</span></div>
+              <div class="chart-container"><canvas id="allocationChart2"></canvas></div>
+            </div>
+            <div class="tile" style="height:380px">
+              <div class="tile-header"><span class="tile-title">Allocation Table</span></div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Asset Class</th>
+                    <th>Allocation %</th>
+                  </tr>
+                </thead>
+                <tbody id="allocation-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sectors Tab -->
+        <div class="tab-panel" data-tab="sectors">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="tile" style="height:350px">
+              <div class="tile-header"><span class="tile-title">By Sector</span></div>
+              <div class="chart-container"><canvas id="sectorChart"></canvas></div>
+            </div>
+            <div class="tile" style="height:350px">
+              <div class="tile-header"><span class="tile-title">By Region</span></div>
+              <div id="region-bars" style="display:flex;flex-direction:column;gap:10px;padding-top:8px;"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Holdings Tab -->
-      <div class="tab-panel active" data-tab="holdings">
-        <div class="tile" id="tile-holdings">
-          <div class="tile-header">
-            <span class="tile-title">All Holdings</span>
-            <div class="tile-actions" style="flex-wrap:wrap;gap:8px">
-              <input type="text" id="holdings-search" placeholder="Search ticker or name..." style="background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-primary);padding:5px 10px;border-radius:var(--radius-md);font-size:12px;outline:none;width:180px">
-              <select id="class-filter" class="styled-select">
-                <option value="">All Classes</option>
-                <option value="US Equity">US Equity</option>
-                <option value="International">International</option>
-                <option value="Fixed Income">Fixed Income</option>
-                <option value="Alternatives">Alternatives</option>
-              </select>
-              <div class="export-dropdown" id="export-holdings">
+      <!-- ======================================================
+         PAGE: RISK & ANALYTICS
+    ====================================================== -->
+      <div class="tabs-container" id="page-risk">
+        <div class="page-tabs">
+          <div class="page-tab active" data-tab="risk-overview">Risk Overview</div>
+          <div class="page-tab" data-tab="montecarlo">Monte Carlo</div>
+          <div class="page-tab" data-tab="stress">Stress Testing</div>
+          <div class="page-tab" data-tab="correlation">Correlation</div>
+          <div class="page-tab" data-tab="factors">Factor Exposure</div>
+        </div>
+
+        <!-- Risk Overview Tab -->
+        <div class="tab-panel active" data-tab="risk-overview">
+          <div class="tile" id="tile-risk">
+            <div class="tile-header">
+              <span class="tile-title">Risk Metrics</span>
+              <div class="export-dropdown" id="export-risk">
                 <button class="export-btn">⬇ Export ▾</button>
                 <div class="export-menu">
                   <div class="export-menu-item" data-export="png">🖼 PNG</div>
                   <div class="export-menu-item" data-export="pdf">📄 PDF</div>
                   <div class="export-menu-item" data-export="csv">📁 CSV</div>
-                  <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
                 </div>
               </div>
             </div>
+
+            <div class="risk-metric-grid">
+              <div class="risk-metric-card">
+                <div class="rm-label">VaR 95%</div>
+                <div id="rm-var95" class="rm-value danger">-2.34%</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Daily worst loss</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">VaR 99%</div>
+                <div id="rm-var99" class="rm-value danger">-3.87%</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Extreme loss</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">CVaR 95%</div>
+                <div id="rm-cvar95" class="rm-value danger">-3.12%</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Expected shortfall</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">CVaR 99%</div>
+                <div id="rm-cvar99" class="rm-value danger">-5.43%</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Tail ES</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">Volatility</div>
+                <div id="rm-vol" class="rm-value warning">11.2%</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Annualized std dev</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">Beta</div>
+                <div id="rm-beta" class="rm-value info">0.91</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">vs. S&amp;P 500</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">Sharpe Ratio</div>
+                <div id="rm-sharpe" class="rm-value success">1.84</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Risk-adj return</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">Sortino Ratio</div>
+                <div id="rm-sortino" class="rm-value success">2.31</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Downside adj</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">Alpha</div>
+                <div id="rm-alpha" class="rm-value success">+2.14%</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">vs. benchmark</div>
+              </div>
+              <div class="risk-metric-card">
+                <div class="rm-label">Max Drawdown</div>
+                <div id="rm-drawdown" class="rm-value danger">-8.43%</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Peak to trough</div>
+              </div>
+            </div>
+
+            <div class="chart-container" style="height:240px;margin-top:16px">
+              <canvas id="varChart"></canvas>
+            </div>
           </div>
-          <div class="data-table-wrapper">
-            <table class="data-table" id="holdings-table">
+        </div>
+
+        <!-- Monte Carlo Tab -->
+        <div class="tab-panel" data-tab="montecarlo">
+          <div class="tile" id="tile-montecarlo" style="height:460px">
+            <div class="tile-header">
+              <span class="tile-title">Monte Carlo Simulation — 252-Day Outlook (100 Paths)</span>
+              <div class="export-dropdown" id="export-montecarlo">
+                <button class="export-btn">⬇ Export ▾</button>
+                <div class="export-menu">
+                  <div class="export-menu-item" data-export="png">🖼 PNG</div>
+                  <div class="export-menu-item" data-export="pdf">📄 PDF</div>
+                  <div class="export-menu-item" data-export="csv">📁 CSV</div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-container" style="flex:1">
+              <canvas id="monteCarloChart"></canvas>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">
+            <div class="risk-metric-card">
+              <div class="rm-label">Probability Gain</div>
+              <div class="rm-value success">73.4%</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Over 1Y horizon</div>
+            </div>
+            <div class="risk-metric-card">
+              <div class="rm-label">Median Outcome</div>
+              <div class="rm-value info">$52.1M</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">50th percentile</div>
+            </div>
+            <div class="risk-metric-card">
+              <div class="rm-label">Worst Case (P5)</div>
+              <div class="rm-value danger">$38.6M</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">5th percentile</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stress Test Tab -->
+        <div class="tab-panel" data-tab="stress">
+          <div class="tile">
+            <div class="tile-header">
+              <span class="tile-title">Stress Test Simulator</span>
+              <div style="font-size:11px;color:var(--text-secondary)">Adjust shock level to see portfolio impact</div>
+            </div>
+
+            <div class="stress-slider-container stress-slider" style="margin-bottom:24px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <span style="font-size:12px;color:var(--text-secondary)">Market Shock Severity</span>
+                <span style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--accent-red)"
+                  id="stress-value">30%</span>
+              </div>
+              <input type="range" id="stress-slider" min="5" max="50" value="30" step="1" style="width:100%">
+              <div
+                style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text-muted)">
+                <span>Mild (-5%)</span><span>Moderate (-20%)</span><span>Severe (-50%)</span>
+              </div>
+            </div>
+
+            <div id="stress-bars"></div>
+
+            <div class="divider"></div>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.7">
+              ⚠ Stress scenarios are illustrative estimates based on historical analogues. Actual portfolio losses may
+              differ due to positions, correlations, and market microstructure during crises. Not a guarantee of future
+              outcomes.
+            </div>
+          </div>
+        </div>
+
+        <!-- Correlation Tab -->
+        <div class="tab-panel" data-tab="correlation">
+          <div class="tile">
+            <div class="tile-header">
+              <span class="tile-title">Correlation Matrix — Top 6 Holdings</span>
+            </div>
+            <div style="overflow-x:auto;display:flex;justify-content:center;padding:16px 0">
+              <canvas id="correlationHeatmap" style="display:block"></canvas>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px">
+              Based on 12-month daily return correlations. Blue = positive, Red = negative correlation.
+            </div>
+          </div>
+        </div>
+
+        <!-- Factor Exposure Tab -->
+        <div class="tab-panel" data-tab="factors">
+          <div class="tile" style="height:380px">
+            <div class="tile-header">
+              <span class="tile-title">Multi-Factor Exposure (Fama-French Style)</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="factorChart"></canvas>
+            </div>
+          </div>
+          <div class="tile" style="margin-top:16px">
+            <div class="tile-header"><span class="tile-title">Factor Details</span></div>
+            <table class="data-table">
               <thead>
                 <tr>
-                  <th data-col="ticker">Ticker <span class="sort-icon">⇅</span></th>
-                  <th data-col="name">Security Name <span class="sort-icon">⇅</span></th>
-                  <th data-col="class">Class <span class="sort-icon">⇅</span></th>
-                  <th data-col="qty">Qty <span class="sort-icon">⇅</span></th>
-                  <th data-col="price">Price <span class="sort-icon">⇅</span></th>
-                  <th data-col="value">Market Value <span class="sort-icon">⇅</span></th>
-                  <th data-col="weight">Weight % <span class="sort-icon">⇅</span></th>
-                  <th data-col="dayChg">Day Chg% <span class="sort-icon">⇅</span></th>
-                  <th data-col="return1y">1Y Return% <span class="sort-icon">⇅</span></th>
+                  <th>Factor</th>
+                  <th>Exposure</th>
+                  <th>Benchmark</th>
+                  <th>Active Tilt</th>
                 </tr>
               </thead>
-              <tbody id="holdings-tbody"></tbody>
+              <tbody id="factors-tbody"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Allocation Tab -->
-      <div class="tab-panel" data-tab="allocation">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="tile" style="height:380px">
-            <div class="tile-header"><span class="tile-title">By Asset Class</span></div>
-            <div class="chart-container"><canvas id="allocationChart2"></canvas></div>
-          </div>
-          <div class="tile" style="height:380px">
-            <div class="tile-header"><span class="tile-title">Allocation Table</span></div>
-            <table class="data-table">
-              <thead><tr><th>Asset Class</th><th>Allocation %</th></tr></thead>
-              <tbody id="allocation-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sectors Tab -->
-      <div class="tab-panel" data-tab="sectors">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="tile" style="height:350px">
-            <div class="tile-header"><span class="tile-title">By Sector</span></div>
-            <div class="chart-container"><canvas id="sectorChart"></canvas></div>
-          </div>
-          <div class="tile" style="height:350px">
-            <div class="tile-header"><span class="tile-title">By Region</span></div>
-            <div id="region-bars" style="display:flex;flex-direction:column;gap:10px;padding-top:8px;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======================================================
-         PAGE: RISK & ANALYTICS
+      <!-- ======================================================
+         PAGE: REBALANCING
     ====================================================== -->
-    <div class="tabs-container" id="page-risk">
-      <div class="page-tabs">
-        <div class="page-tab active" data-tab="risk-overview">Risk Overview</div>
-        <div class="page-tab" data-tab="montecarlo">Monte Carlo</div>
-        <div class="page-tab" data-tab="stress">Stress Testing</div>
-        <div class="page-tab" data-tab="correlation">Correlation</div>
-        <div class="page-tab" data-tab="factors">Factor Exposure</div>
-      </div>
+      <div class="tabs-container" id="page-rebalancing">
+        <div class="page-tabs">
+          <div class="page-tab active" data-tab="reb-overview">Drift Analysis</div>
+          <div class="page-tab" data-tab="reb-trades">Trade Proposals</div>
+          <div class="page-tab" data-tab="reb-chart">Visual Comparison</div>
+        </div>
 
-      <!-- Risk Overview Tab -->
-      <div class="tab-panel active" data-tab="risk-overview">
-        <div class="tile" id="tile-risk">
-          <div class="tile-header">
-            <span class="tile-title">Risk Metrics</span>
-            <div class="export-dropdown" id="export-risk">
-              <button class="export-btn">⬇ Export ▾</button>
-              <div class="export-menu">
-                <div class="export-menu-item" data-export="png">🖼 PNG</div>
-                <div class="export-menu-item" data-export="pdf">📄 PDF</div>
-                <div class="export-menu-item" data-export="csv">📁 CSV</div>
+        <!-- Drift -->
+        <div class="tab-panel active" data-tab="reb-overview">
+          <div class="tile" id="tile-rebalancing">
+            <div class="tile-header">
+              <span class="tile-title">Allocation Drift vs. Target</span>
+              <div class="tile-actions">
+                <span style="font-size:10px;color:var(--text-muted)">Threshold: ±2%</span>
+                <div class="export-dropdown" id="export-rebalancing">
+                  <button class="export-btn">⬇ Export ▾</button>
+                  <div class="export-menu">
+                    <div class="export-menu-item" data-export="png">🖼 PNG</div>
+                    <div class="export-menu-item" data-export="pdf">📄 PDF</div>
+                    <div class="export-menu-item" data-export="csv">📁 CSV</div>
+                    <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="drift-bars"></div>
+
+            <div class="divider"></div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
+                <span style="width:10px;height:10px;border-radius:2px;background:#ef4444;display:inline-block"></span>
+                Over target (sell)
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
+                <span style="width:10px;height:10px;border-radius:2px;background:#f59e0b;display:inline-block"></span>
+                Under target (buy)
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
+                <span style="width:10px;height:10px;border-radius:2px;background:#10b981;display:inline-block"></span>
+                Within tolerance
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
+                <span style="width:2px;height:12px;background:rgba(255,255,255,0.5);display:inline-block"></span> Target
+                line
               </div>
             </div>
           </div>
-
-          <div class="risk-metric-grid">
-            <div class="risk-metric-card">
-              <div class="rm-label">VaR 95%</div>
-              <div id="rm-var95" class="rm-value danger">-2.34%</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Daily worst loss</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">VaR 99%</div>
-              <div id="rm-var99" class="rm-value danger">-3.87%</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Extreme loss</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">CVaR 95%</div>
-              <div id="rm-cvar95" class="rm-value danger">-3.12%</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Expected shortfall</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">CVaR 99%</div>
-              <div id="rm-cvar99" class="rm-value danger">-5.43%</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Tail ES</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">Volatility</div>
-              <div id="rm-vol" class="rm-value warning">11.2%</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Annualized std dev</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">Beta</div>
-              <div id="rm-beta" class="rm-value info">0.91</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">vs. S&amp;P 500</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">Sharpe Ratio</div>
-              <div id="rm-sharpe" class="rm-value success">1.84</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Risk-adj return</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">Sortino Ratio</div>
-              <div id="rm-sortino" class="rm-value success">2.31</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Downside adj</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">Alpha</div>
-              <div id="rm-alpha" class="rm-value success">+2.14%</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">vs. benchmark</div>
-            </div>
-            <div class="risk-metric-card">
-              <div class="rm-label">Max Drawdown</div>
-              <div id="rm-drawdown" class="rm-value danger">-8.43%</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Peak to trough</div>
-            </div>
-          </div>
-
-          <div class="chart-container" style="height:240px;margin-top:16px">
-            <canvas id="varChart"></canvas>
-          </div>
         </div>
-      </div>
 
-      <!-- Monte Carlo Tab -->
-      <div class="tab-panel" data-tab="montecarlo">
-        <div class="tile" id="tile-montecarlo" style="height:460px">
-          <div class="tile-header">
-            <span class="tile-title">Monte Carlo Simulation — 252-Day Outlook (100 Paths)</span>
-            <div class="export-dropdown" id="export-montecarlo">
-              <button class="export-btn">⬇ Export ▾</button>
-              <div class="export-menu">
-                <div class="export-menu-item" data-export="png">🖼 PNG</div>
-                <div class="export-menu-item" data-export="pdf">📄 PDF</div>
-                <div class="export-menu-item" data-export="csv">📁 CSV</div>
+        <!-- Trades -->
+        <div class="tab-panel" data-tab="reb-trades">
+          <div class="tile">
+            <div class="tile-header">
+              <span class="tile-title">Proposed Trades</span>
+              <div class="tile-actions">
+                <button class="btn btn-success btn-sm"
+                  onclick="ExportUtil.showToast('Trade orders submitted for review!','success')">✅ Approve All</button>
+                <button class="btn btn-secondary btn-sm"
+                  onclick="ExportUtil.exportCSV(DUMMY_DATA.rebalancing.trades,'Rebalancing_Trades')">📁 Export
+                  CSV</button>
+              </div>
+            </div>
+            <div id="trade-suggestions"></div>
+
+            <div class="divider"></div>
+            <div
+              style="background:var(--bg-surface);border-radius:var(--radius-md);padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div style="text-align:center">
+                <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Total
+                  Sells</div>
+                <div class="text-mono pct-negative" style="font-size:16px;font-weight:700">$26,413</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Total
+                  Buys</div>
+                <div class="text-mono pct-positive" style="font-size:16px;font-weight:700">$22,136</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Net Cash
+                </div>
+                <div class="text-mono pct-positive" style="font-size:16px;font-weight:700">+$4,277</div>
               </div>
             </div>
           </div>
-          <div class="chart-container" style="flex:1">
-            <canvas id="monteCarloChart"></canvas>
-          </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">
-          <div class="risk-metric-card">
-            <div class="rm-label">Probability Gain</div>
-            <div class="rm-value success">73.4%</div>
-            <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Over 1Y horizon</div>
-          </div>
-          <div class="risk-metric-card">
-            <div class="rm-label">Median Outcome</div>
-            <div class="rm-value info">$52.1M</div>
-            <div style="font-size:10px;color:var(--text-muted);margin-top:4px">50th percentile</div>
-          </div>
-          <div class="risk-metric-card">
-            <div class="rm-label">Worst Case (P5)</div>
-            <div class="rm-value danger">$38.6M</div>
-            <div style="font-size:10px;color:var(--text-muted);margin-top:4px">5th percentile</div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Stress Test Tab -->
-      <div class="tab-panel" data-tab="stress">
-        <div class="tile">
-          <div class="tile-header">
-            <span class="tile-title">Stress Test Simulator</span>
-            <div style="font-size:11px;color:var(--text-secondary)">Adjust shock level to see portfolio impact</div>
-          </div>
-
-          <div class="stress-slider-container stress-slider" style="margin-bottom:24px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span style="font-size:12px;color:var(--text-secondary)">Market Shock Severity</span>
-              <span style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--accent-red)" id="stress-value">30%</span>
-            </div>
-            <input type="range" id="stress-slider" min="5" max="50" value="30" step="1" style="width:100%">
-            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text-muted)">
-              <span>Mild (-5%)</span><span>Moderate (-20%)</span><span>Severe (-50%)</span>
+        <!-- Visual Chart -->
+        <div class="tab-panel" data-tab="reb-chart">
+          <div class="tile" style="height:420px">
+            <div class="tile-header"><span class="tile-title">Current vs. Target Allocation</span></div>
+            <div class="chart-container">
+              <canvas id="rebalancingChart"></canvas>
             </div>
           </div>
-
-          <div id="stress-bars"></div>
-
-          <div class="divider"></div>
-          <div style="font-size:11px;color:var(--text-muted);line-height:1.7">
-            ⚠ Stress scenarios are illustrative estimates based on historical analogues. Actual portfolio losses may differ due to positions, correlations, and market microstructure during crises. Not a guarantee of future outcomes.
-          </div>
         </div>
       </div>
 
-      <!-- Correlation Tab -->
-      <div class="tab-panel" data-tab="correlation">
-        <div class="tile">
-          <div class="tile-header">
-            <span class="tile-title">Correlation Matrix — Top 6 Holdings</span>
-          </div>
-          <div style="overflow-x:auto;display:flex;justify-content:center;padding:16px 0">
-            <canvas id="correlationHeatmap" style="display:block"></canvas>
-          </div>
-          <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px">
-            Based on 12-month daily return correlations. Blue = positive, Red = negative correlation.
+      <!-- ======================================================
+         PAGE: CLIENTS
+    ====================================================== -->
+      <div class="tabs-container" id="page-clients">
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+          <h2 class="section-title" style="margin-bottom:0">Client Households</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="export-dropdown" id="export-clients">
+              <button class="export-btn">⬇ Export All ▾</button>
+              <div class="export-menu">
+                <div class="export-menu-item" data-export="csv">📁 CSV</div>
+                <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="ExportUtil.showToast('Add client panel coming soon!', '')">+
+              Add Client</button>
           </div>
         </div>
+
+        <!-- Summary stats -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="risk-metric-card">
+            <div class="rm-label">Total Clients</div>
+            <div class="rm-value info">6</div>
+          </div>
+          <div class="risk-metric-card">
+            <div class="rm-label">Total AUM</div>
+            <div class="rm-value success">$44.0M</div>
+          </div>
+          <div class="risk-metric-card">
+            <div class="rm-label">Avg 1Y Return</div>
+            <div class="rm-value success">+9.4%</div>
+          </div>
+          <div class="risk-metric-card">
+            <div class="rm-label">Review Needed</div>
+            <div class="rm-value warning">1</div>
+          </div>
+        </div>
+
+        <div class="client-grid" id="client-grid"></div>
       </div>
 
-      <!-- Factor Exposure Tab -->
-      <div class="tab-panel" data-tab="factors">
-        <div class="tile" style="height:380px">
-          <div class="tile-header">
-            <span class="tile-title">Multi-Factor Exposure (Fama-French Style)</span>
+      <!-- ======================================================
+         PAGE: REPORTS
+    ====================================================== -->
+      <div class="tabs-container" id="page-reports">
+        <h2 class="section-title">Report Generator</h2>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap">
+          <span style="font-size:13px;color:var(--text-secondary)">Select Client:</span>
+          <select id="report-client-select" class="styled-select">
+            <option value="C001">Anderson Family Trust</option>
+            <option value="C002">Nguyen Household</option>
+            <option value="C003">Rodriguez Family</option>
+            <option value="C004">Chen Tech Executive</option>
+            <option value="C005">Patel Foundation</option>
+            <option value="C006">Williams Retiree</option>
+          </select>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+
+          <div class="report-card">
+            <div class="report-icon">📊</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;margin-bottom:4px">Monthly Performance Report</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Holdings, returns, allocation
+                breakdown &amp; benchmark comparison.</div>
+              <button class="btn btn-primary generate-report-btn" data-type="monthly">Generate PDF</button>
+            </div>
           </div>
-          <div class="chart-container">
-            <canvas id="factorChart"></canvas>
+
+          <div class="report-card">
+            <div class="report-icon">⚠️</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;margin-bottom:4px">Risk Summary Report</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">VaR, CVaR, stress tests, factor
+                exposures &amp; drawdown analysis.</div>
+              <button class="btn btn-primary generate-report-btn" data-type="risk">Generate PDF</button>
+            </div>
+          </div>
+
+          <div class="report-card">
+            <div class="report-icon">⚖️</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;margin-bottom:4px">Rebalancing Proposal</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Target vs. current drift,
+                proposed trades &amp; post-rebalance impact.</div>
+              <button class="btn btn-primary generate-report-btn" data-type="rebalancing">Generate PDF</button>
+            </div>
+          </div>
+
+          <div class="report-card">
+            <div class="report-icon">👤</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;margin-bottom:4px">Client Presentation</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Executive summary deck with
+                cover page, charts &amp; key insights.</div>
+              <button class="btn btn-primary generate-report-btn" data-type="presentation">Generate PDF</button>
+            </div>
+          </div>
+
+          <div class="report-card">
+            <div class="report-icon">📁</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;margin-bottom:4px">Raw Data Export</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">All holdings, transactions and
+                risk metrics as Excel workbook.</div>
+              <button class="btn btn-secondary btn-sm"
+                onclick="ExportUtil.exportExcel(DUMMY_DATA.holdings,'Holdings_Export','Holdings')">📊 Export
+                Holdings</button>
+              <button class="btn btn-secondary btn-sm" style="margin-top:6px"
+                onclick="ExportUtil.exportCSV(DUMMY_DATA.transactions,'Transactions_Export')">📁 Export
+                Transactions</button>
+            </div>
+          </div>
+
+          <div class="report-card">
+            <div class="report-icon">🔔</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;margin-bottom:4px">Alerts &amp; Compliance</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">All current threshold alerts
+                and required compliance notifications.</div>
+              <button class="btn btn-secondary generate-report-btn" data-type="alerts"
+                onclick="ExportUtil.exportCSV(DUMMY_DATA.alerts,'Alerts_Export')">Export Alerts CSV</button>
+            </div>
           </div>
         </div>
-        <div class="tile" style="margin-top:16px">
-          <div class="tile-header"><span class="tile-title">Factor Details</span></div>
+
+        <div class="tile" style="margin-top:24px">
+          <div class="tile-header"><span class="tile-title">Report History (Demo)</span></div>
           <table class="data-table">
-            <thead><tr><th>Factor</th><th>Exposure</th><th>Benchmark</th><th>Active Tilt</th></tr></thead>
-            <tbody id="factors-tbody"></tbody>
+            <thead>
+              <tr>
+                <th>Report Type</th>
+                <th>Client</th>
+                <th>Generated</th>
+                <th>Format</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Monthly Performance</td>
+                <td>Anderson Family Trust</td>
+                <td>2026-03-31</td>
+                <td>PDF</td>
+                <td><button class="btn btn-secondary btn-sm"
+                    onclick="ExportUtil.generateFullReport('C001')">Re-generate</button></td>
+              </tr>
+              <tr>
+                <td>Risk Summary</td>
+                <td>Chen Tech Executive</td>
+                <td>2026-03-28</td>
+                <td>PDF</td>
+                <td><button class="btn btn-secondary btn-sm"
+                    onclick="ExportUtil.generateFullReport('C004')">Re-generate</button></td>
+              </tr>
+              <tr>
+                <td>Rebalancing Proposal</td>
+                <td>Rodriguez Family</td>
+                <td>2026-03-25</td>
+                <td>PDF + XLSX</td>
+                <td><button class="btn btn-secondary btn-sm"
+                    onclick="ExportUtil.generateFullReport('C003')">Re-generate</button></td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- ======================================================
-         PAGE: REBALANCING
-    ====================================================== -->
-    <div class="tabs-container" id="page-rebalancing">
-      <div class="page-tabs">
-        <div class="page-tab active" data-tab="reb-overview">Drift Analysis</div>
-        <div class="page-tab" data-tab="reb-trades">Trade Proposals</div>
-        <div class="page-tab" data-tab="reb-chart">Visual Comparison</div>
-      </div>
+    </main>
+  </div>
 
-      <!-- Drift -->
-      <div class="tab-panel active" data-tab="reb-overview">
-        <div class="tile" id="tile-rebalancing">
-          <div class="tile-header">
-            <span class="tile-title">Allocation Drift vs. Target</span>
-            <div class="tile-actions">
-              <span style="font-size:10px;color:var(--text-muted)">Threshold: ±2%</span>
-              <div class="export-dropdown" id="export-rebalancing">
-                <button class="export-btn">⬇ Export ▾</button>
-                <div class="export-menu">
-                  <div class="export-menu-item" data-export="png">🖼 PNG</div>
-                  <div class="export-menu-item" data-export="pdf">📄 PDF</div>
-                  <div class="export-menu-item" data-export="csv">📁 CSV</div>
-                  <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="drift-bars"></div>
-
-          <div class="divider"></div>
-          <div style="display:flex;gap:16px;flex-wrap:wrap">
-            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
-              <span style="width:10px;height:10px;border-radius:2px;background:#ef4444;display:inline-block"></span> Over target (sell)
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
-              <span style="width:10px;height:10px;border-radius:2px;background:#f59e0b;display:inline-block"></span> Under target (buy)
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
-              <span style="width:10px;height:10px;border-radius:2px;background:#10b981;display:inline-block"></span> Within tolerance
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary)">
-              <span style="width:2px;height:12px;background:rgba(255,255,255,0.5);display:inline-block"></span> Target line
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Trades -->
-      <div class="tab-panel" data-tab="reb-trades">
-        <div class="tile">
-          <div class="tile-header">
-            <span class="tile-title">Proposed Trades</span>
-            <div class="tile-actions">
-              <button class="btn btn-success btn-sm" onclick="ExportUtil.showToast('Trade orders submitted for review!','success')">✅ Approve All</button>
-              <button class="btn btn-secondary btn-sm" onclick="ExportUtil.exportCSV(DUMMY_DATA.rebalancing.trades,'Rebalancing_Trades')">📁 Export CSV</button>
-            </div>
-          </div>
-          <div id="trade-suggestions"></div>
-
-          <div class="divider"></div>
-          <div style="background:var(--bg-surface);border-radius:var(--radius-md);padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Total Sells</div>
-              <div class="text-mono pct-negative" style="font-size:16px;font-weight:700">$26,413</div>
-            </div>
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Total Buys</div>
-              <div class="text-mono pct-positive" style="font-size:16px;font-weight:700">$22,136</div>
-            </div>
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Net Cash</div>
-              <div class="text-mono pct-positive" style="font-size:16px;font-weight:700">+$4,277</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Visual Chart -->
-      <div class="tab-panel" data-tab="reb-chart">
-        <div class="tile" style="height:420px">
-          <div class="tile-header"><span class="tile-title">Current vs. Target Allocation</span></div>
-          <div class="chart-container">
-            <canvas id="rebalancingChart"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======================================================
-         PAGE: CLIENTS
-    ====================================================== -->
-    <div class="tabs-container" id="page-clients">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-        <h2 class="section-title" style="margin-bottom:0">Client Households</h2>
-        <div style="display:flex;gap:10px;align-items:center">
-          <div class="export-dropdown" id="export-clients">
-            <button class="export-btn">⬇ Export All ▾</button>
-            <div class="export-menu">
-              <div class="export-menu-item" data-export="csv">📁 CSV</div>
-              <div class="export-menu-item" data-export="xlsx">📊 Excel</div>
-            </div>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="ExportUtil.showToast('Add client panel coming soon!', '')">+ Add Client</button>
-        </div>
-      </div>
-
-      <!-- Summary stats -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
-        <div class="risk-metric-card">
-          <div class="rm-label">Total Clients</div>
-          <div class="rm-value info">6</div>
-        </div>
-        <div class="risk-metric-card">
-          <div class="rm-label">Total AUM</div>
-          <div class="rm-value success">$44.0M</div>
-        </div>
-        <div class="risk-metric-card">
-          <div class="rm-label">Avg 1Y Return</div>
-          <div class="rm-value success">+9.4%</div>
-        </div>
-        <div class="risk-metric-card">
-          <div class="rm-label">Review Needed</div>
-          <div class="rm-value warning">1</div>
-        </div>
-      </div>
-
-      <div class="client-grid" id="client-grid"></div>
-    </div>
-
-    <!-- ======================================================
-         PAGE: REPORTS
-    ====================================================== -->
-    <div class="tabs-container" id="page-reports">
-      <h2 class="section-title">Report Generator</h2>
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap">
-        <span style="font-size:13px;color:var(--text-secondary)">Select Client:</span>
-        <select id="report-client-select" class="styled-select">
-          <option value="C001">Anderson Family Trust</option>
-          <option value="C002">Nguyen Household</option>
-          <option value="C003">Rodriguez Family</option>
-          <option value="C004">Chen Tech Executive</option>
-          <option value="C005">Patel Foundation</option>
-          <option value="C006">Williams Retiree</option>
-        </select>
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
-
-        <div class="report-card">
-          <div class="report-icon">📊</div>
-          <div style="flex:1">
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Monthly Performance Report</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Holdings, returns, allocation breakdown &amp; benchmark comparison.</div>
-            <button class="btn btn-primary generate-report-btn" data-type="monthly">Generate PDF</button>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-icon">⚠️</div>
-          <div style="flex:1">
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Risk Summary Report</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">VaR, CVaR, stress tests, factor exposures &amp; drawdown analysis.</div>
-            <button class="btn btn-primary generate-report-btn" data-type="risk">Generate PDF</button>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-icon">⚖️</div>
-          <div style="flex:1">
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Rebalancing Proposal</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Target vs. current drift, proposed trades &amp; post-rebalance impact.</div>
-            <button class="btn btn-primary generate-report-btn" data-type="rebalancing">Generate PDF</button>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-icon">👤</div>
-          <div style="flex:1">
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Client Presentation</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Executive summary deck with cover page, charts &amp; key insights.</div>
-            <button class="btn btn-primary generate-report-btn" data-type="presentation">Generate PDF</button>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-icon">📁</div>
-          <div style="flex:1">
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Raw Data Export</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">All holdings, transactions and risk metrics as Excel workbook.</div>
-            <button class="btn btn-secondary btn-sm" onclick="ExportUtil.exportExcel(DUMMY_DATA.holdings,'Holdings_Export','Holdings')">📊 Export Holdings</button>
-            <button class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="ExportUtil.exportCSV(DUMMY_DATA.transactions,'Transactions_Export')">📁 Export Transactions</button>
-          </div>
-        </div>
-
-        <div class="report-card">
-          <div class="report-icon">🔔</div>
-          <div style="flex:1">
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Alerts &amp; Compliance</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">All current threshold alerts and required compliance notifications.</div>
-            <button class="btn btn-secondary generate-report-btn" data-type="alerts" onclick="ExportUtil.exportCSV(DUMMY_DATA.alerts,'Alerts_Export')">Export Alerts CSV</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="tile" style="margin-top:24px">
-        <div class="tile-header"><span class="tile-title">Report History (Demo)</span></div>
-        <table class="data-table">
-          <thead><tr><th>Report Type</th><th>Client</th><th>Generated</th><th>Format</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td>Monthly Performance</td><td>Anderson Family Trust</td><td>2026-03-31</td><td>PDF</td><td><button class="btn btn-secondary btn-sm" onclick="ExportUtil.generateFullReport('C001')">Re-generate</button></td></tr>
-            <tr><td>Risk Summary</td><td>Chen Tech Executive</td><td>2026-03-28</td><td>PDF</td><td><button class="btn btn-secondary btn-sm" onclick="ExportUtil.generateFullReport('C004')">Re-generate</button></td></tr>
-            <tr><td>Rebalancing Proposal</td><td>Rodriguez Family</td><td>2026-03-25</td><td>PDF + XLSX</td><td><button class="btn btn-secondary btn-sm" onclick="ExportUtil.generateFullReport('C003')">Re-generate</button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<!-- ============================================================
+  <!-- ============================================================
      ALERTS PANEL
 ============================================================ -->
-<div class="alerts-panel" id="alerts-panel">
-  <div class="alerts-panel-header">
-    <span class="alerts-panel-title">🔔 Notifications</span>
-    <span class="alerts-panel-close" id="alerts-panel-close">✕</span>
+  <div class="alerts-panel" id="alerts-panel">
+    <div class="alerts-panel-header">
+      <span class="alerts-panel-title">🔔 Notifications</span>
+      <span class="alerts-panel-close" id="alerts-panel-close">✕</span>
+    </div>
+    <div class="alerts-panel-body" id="alerts-panel-body"></div>
   </div>
-  <div class="alerts-panel-body" id="alerts-panel-body"></div>
-</div>
 
-<!-- ============================================================
+  <!-- ============================================================
      CLIENT DETAIL MODAL
 ============================================================ -->
-<div class="modal-backdrop" id="client-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Client Details</span>
-      <span class="modal-close" id="modal-close-btn">✕</span>
-    </div>
-    <div id="client-modal-body"></div>
-    <div style="display:flex;gap:10px;margin-top:20px">
-      <button class="btn btn-primary" onclick="ExportUtil.generateFullReport(document.querySelector('#client-modal [data-client-id]')?.dataset.clientId||'C001')">📄 Generate Report</button>
-      <button class="btn btn-secondary" id="modal-close-btn2" onclick="document.getElementById('client-modal').classList.remove('open')">Close</button>
+  <div class="modal-backdrop" id="client-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Client Details</span>
+        <span class="modal-close" id="modal-close-btn">✕</span>
+      </div>
+      <div id="client-modal-body"></div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-primary"
+          onclick="ExportUtil.generateFullReport(document.querySelector('#client-modal [data-client-id]')?.dataset.clientId||'C001')">📄
+          Generate Report</button>
+        <button class="btn btn-secondary" id="modal-close-btn2"
+          onclick="document.getElementById('client-modal').classList.remove('open')">Close</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Toast Container -->
-<div id="toast-container"></div>
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
 
-<!-- ============================================================
+  <!-- ============================================================
      SCRIPTS
 ============================================================ -->
-<script src="js/data.js"></script>
-<script src="js/export.js"></script>
-<script src="js/charts.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
 
 
 
 </body>
+
 </html>

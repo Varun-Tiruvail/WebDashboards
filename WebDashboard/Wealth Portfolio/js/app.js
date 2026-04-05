@@ -732,7 +732,21 @@ const App = (() => {
     });
   }
 
-  // Call init directly — scripts are at end of body so DOM is ready
-  init();
+  // Call init on load with a slight delay for the start animation
+  const START_TIME = Date.now();
+  window.addEventListener('load', () => {
+    const elapsed = Date.now() - START_TIME;
+    const delay = Math.max(0, 1000 - elapsed); // min 1s load screen
+    
+    setTimeout(() => {
+      init();
+      const loader = document.getElementById('app-loader');
+      if (loader) {
+        loader.classList.add('hidden');
+        setTimeout(() => loader.remove(), 500);
+      }
+    }, delay);
+  });
+
   return { navigateTo: navigateToWithCharts };
 })();
